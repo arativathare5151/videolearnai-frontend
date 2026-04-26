@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { supabase } from "../lib/supabase"
 
-const BACKEND = "http://127.0.0.1:8000"
+const BACKEND = "https://videolearnai-backend-production-2420.up.railway.app"
 
 export default function VideoUpload({ user, onNavigate }) {
   const [file, setFile]         = useState(null)
