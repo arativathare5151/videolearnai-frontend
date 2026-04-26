@@ -10,23 +10,37 @@ export default function Auth() {
   const [error, setError]       = useState(null)
   const [message, setMessage]   = useState(null)
 
-  async function handleSubmit() {
-    setLoading(true)
-    setError(null)
-    setMessage(null)
-    if (isSignUp) {
-      const { error } = await supabase.auth.signUp({
-        email, password,
-        options: { data: { full_name: fullName } },
-      })
-      if (error) setError(error.message)
-      else setMessage('Account created! You can now sign in.')
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) setError(error.message)
+async function handleSubmit() {
+  setLoading(true)
+  setError(null)
+  setMessage(null)
+
+  if (isSignUp) {
+    // Sign up
+    const { error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName } },
+    })
+    if (signUpError) {
+      setError(signUpError.message)
+      setLoading(false)
+      return
     }
-    setLoading(false)
+    // Auto sign in immediately after signup
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+    if (signInError) {
+      setMessage('Account created! Please sign in.')
+    }
+  } else {
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) setError(error.message)
   }
+  setLoading(false)
+}
 
   return (
     <div style={{
